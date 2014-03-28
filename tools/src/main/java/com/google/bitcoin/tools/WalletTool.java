@@ -17,6 +17,7 @@
 package com.google.bitcoin.tools;
 
 import com.google.bitcoin.core.*;
+import com.google.bitcoin.crypto.DeterministicKey;
 import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.bitcoin.crypto.MnemonicCode;
 import com.google.bitcoin.crypto.MnemonicException;
@@ -70,7 +71,7 @@ public class WalletTool {
     private static OptionSet options;
     private static OptionSpec<Date> dateFlag;
     private static OptionSpec<Integer> unixtimeFlag;
-    private static OptionSpec<String> seedFlag;
+    private static OptionSpec<String> seedFlag, watchFlag;
 
     private static NetworkParameters params;
     private static File walletFile;
@@ -179,6 +180,7 @@ public class WalletTool {
         parser.accepts("debuglog");
         OptionSpec<String> walletFileName = parser.accepts("wallet").withRequiredArg().defaultsTo("wallet");
         seedFlag = parser.accepts("seed").withRequiredArg();
+        watchFlag = parser.accepts("watchkey").withRequiredArg();
         OptionSpec<NetworkEnum> netFlag = parser.accepts("net").withOptionalArg().ofType(NetworkEnum.class).defaultsTo(NetworkEnum.PROD);
         dateFlag = parser.accepts("date").withRequiredArg().ofType(Date.class)
                 .withValuesConvertedBy(DateConverter.datePattern("yyyy/MM/dd"));
@@ -806,6 +808,9 @@ public class WalletTool {
                 seed = new DeterministicSeed(bits, creationTimeSecs);
             }
             wallet = Wallet.fromSeed(params, seed);
+        } else if (options.has(watchFlag)) {
+            DeterministicKey watchKey = DeterministicKey.deserializeB58(null, options.valueOf(watchFlag));
+            wallet = Wallet.fromWatchingKey(params, watchKey);
         } else {
             wallet = new Wallet(params);
         }

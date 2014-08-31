@@ -31,6 +31,15 @@
   <description>A collection of useful tools that use the bitcoinj library to perform wallet operations</description>
 
   <build>
+      <pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>net.alchim31.maven</groupId>
+                  <artifactId>scala-maven-plugin</artifactId>
+                  <version>3.2.0</version>
+              </plugin>                
+          </plugins>
+      </pluginManagement>
 
       <plugins>
 
@@ -68,7 +77,30 @@
                   </execution>
               </executions>
           </plugin>
-
+          <plugin>
+              <groupId>net.alchim31.maven</groupId>
+              <artifactId>scala-maven-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <id>scala-compile-first</id>
+                      <phase>process-resources</phase>
+                      <goals>
+                          <goal>add-source</goal>
+                          <goal>compile</goal>
+                      </goals>
+                  </execution>
+                  <execution>
+                      <id>scala-test-compile</id>
+                      <phase>process-test-resources</phase>
+                      <goals>
+                          <goal>testCompile</goal>
+                      </goals>
+                  </execution>
+              </executions>
+              <configuration>
+                  <scalaVersion>2.11.2</scalaVersion>
+              </configuration>
+          </plugin>
       </plugins>
   </build>
 
@@ -92,6 +124,11 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.3.167</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.11.2</version>
     </dependency>
   </dependencies>
 </project>

@@ -30,19 +30,21 @@ import com.nhnsoft.bitcoin.core.StoredBlock;
  *
  * BlockStores are thread safe.
  */
-public interface BlockStore {
+trait BlockStore {
     /**
      * Saves the given block header+extra data. The key isn't specified explicitly as it can be calculated from the
      * StoredBlock directly. Can throw if there is a problem with the underlying storage layer such as running out of
      * disk space.
      */
-    void put(StoredBlock block) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def put(block : StoredBlock) : Unit
 
     /**
      * Returns the StoredBlock given a hash. The returned values block.getHash() method will be equal to the
      * parameter. If no such block is found, returns null.
      */
-    StoredBlock get(Sha256Hash hash) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def get(hash : Sha256Hash) : StoredBlock
 
     /**
      * Returns the {@link StoredBlock} that represents the top of the chain of greatest total work. Note that this
@@ -50,13 +52,16 @@ public interface BlockStore {
      * or perhaps {@link com.nhnsoft.bitcoin.core.BlockChain#getBestChainHeight()} which will run in constant time and
      * not take any heavyweight locks.
      */
-    StoredBlock getChainHead() throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def getChainHead() : StoredBlock
 
     /**
      * Sets the {@link StoredBlock} that represents the top of the chain of greatest total work.
      */
-    void setChainHead(StoredBlock chainHead) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def setChainHead(chainHead : StoredBlock);
     
     /** Closes the store. */
-    void close() throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def close() : Unit
 }

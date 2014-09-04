@@ -49,7 +49,7 @@ import com.nhnsoft.bitcoin.core.StoredUndoableBlock;
  *
  * <p>FullPrunedBlockStores are thread safe.</p>
  */
-public interface FullPrunedBlockStore extends BlockStore {
+trait FullPrunedBlockStore extends BlockStore {
     /**
      * <p>Saves the given {@link StoredUndoableBlock} and {@link StoredBlock}. Calculates keys from the {@link StoredBlock}</p>
      * 
@@ -59,50 +59,58 @@ public interface FullPrunedBlockStore extends BlockStore {
      * 
      * @throws BlockStoreException if there is a problem with the underlying storage layer, such as running out of disk space.
      */
-    void put(StoredBlock storedBlock, StoredUndoableBlock undoableBlock) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def put(storedBlock : StoredBlock, undoableBlock : StoredUndoableBlock) : Unit;
     
     /**
      * Returns the StoredBlock that was added as a StoredUndoableBlock given a hash. The returned values block.getHash()
      * method will be equal to the parameter. If no such block is found, returns null.
      */
-    StoredBlock getOnceUndoableStoredBlock(Sha256Hash hash) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def getOnceUndoableStoredBlock(hash : Sha256Hash) : StoredBlock;
 
     /**
      * Returns a {@link StoredUndoableBlock} whose block.getHash() method will be equal to the parameter. If no such
      * block is found, returns null. Note that this may return null more often than get(Sha256Hash hash) as not all
      * {@link StoredBlock}s have a {@link StoredUndoableBlock} copy stored as well.
      */
-    StoredUndoableBlock getUndoBlock(Sha256Hash hash) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def getUndoBlock(hash : Sha256Hash) : StoredUndoableBlock
     
     /**
      * Gets a {@link StoredTransactionOutput} with the given hash and index, or null if none is found
      */
-    StoredTransactionOutput getTransactionOutput(Sha256Hash hash, long index) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def getTransactionOutput(hash : Sha256Hash, index : Long) : StoredTransactionOutput
     
     /**
      * Adds a {@link StoredTransactionOutput} to the list of unspent TransactionOutputs
      */
-    void addUnspentTransactionOutput(StoredTransactionOutput out) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def addUnspentTransactionOutput(out : StoredTransactionOutput) : Unit
     
     /**
      * Removes a {@link StoredTransactionOutput} from the list of unspent TransactionOutputs
      * Note that the coinbase of the genesis block should NEVER be spendable and thus never in the list.
      * @throws BlockStoreException if there is an underlying storage issue, or out was not in the list.
      */
-    void removeUnspentTransactionOutput(StoredTransactionOutput out) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def removeUnspentTransactionOutput(out : StoredTransactionOutput) : Unit
     
     /**
      * True if this store has any unspent outputs from a transaction with a hash equal to the first parameter
      * @param numOutputs the number of outputs the given transaction has
      */
-    boolean hasUnspentOutputs(Sha256Hash hash, int numOutputs) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def hasUnspentOutputs(hash : Sha256Hash, numOutputs : Int) : Boolean
     
     /**
      * Returns the {@link StoredBlock} that represents the top of the chain of greatest total work that has
      * been fully verified and the point in the chain at which the unspent transaction output set in this
      * store represents.
      */
-    StoredBlock getVerifiedChainHead() throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def getVerifiedChainHead() : StoredBlock
 
     /**
      * Sets the {@link StoredBlock} that represents the top of the chain of greatest total work that has been
@@ -114,7 +122,8 @@ public interface FullPrunedBlockStore extends BlockStore {
      * In this way a class using a FullPrunedBlockStore only in full-verification mode can ignore the regular
      * {@link BlockStore} functions implemented as a part of a FullPrunedBlockStore.
      */
-    void setVerifiedChainHead(StoredBlock chainHead) throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def setVerifiedChainHead(chainHead : StoredBlock) : Unit
     
     /**
      * <p>Begins/Commits/Aborts a database transaction.</p>
@@ -127,7 +136,12 @@ public interface FullPrunedBlockStore extends BlockStore {
      * by any other threads until commitDatabaseBatchWrite() has been called by this thread.
      * Multiple calls to beginDatabaseBatchWrite() in any given thread should be ignored and treated as one call.</p>
      */
-    void beginDatabaseBatchWrite() throws BlockStoreException;
-    void commitDatabaseBatchWrite() throws BlockStoreException;
-    void abortDatabaseBatchWrite() throws BlockStoreException;
+    @throws( classOf[BlockStoreException] )
+    def beginDatabaseBatchWrite() : Unit
+
+    @throws( classOf[BlockStoreException] )
+    def commitDatabaseBatchWrite() : Unit
+
+    @throws( classOf[BlockStoreException] )
+    def abortDatabaseBatchWrite() : Unit
 }

@@ -35,19 +35,20 @@ import java.util.Map;
  * "owner" or just "o". Also, it's good practice to create constants for each string you use, to help avoid typos
  * in string parameters causing confusing bugs!</p>
  */
-public interface TaggableObject {
+trait TaggableObject {
     /** Returns the immutable byte array associated with the given tag name, or null if there is none. */
-    @Nullable ByteString maybeGetTag(String tag);
+    @Nullable 
+    def maybeGetTag(tag : String) : ByteString
 
     /**
      * Returns the immutable byte array associated with the given tag name, or throws {@link java.lang.IllegalArgumentException}
      * if that tag wasn't set yet.
      */
-    ByteString getTag(String tag);
+    def getTag(tag : String) : ByteString
 
     /** Associates the given immutable byte array with the string tag. See the docs for TaggableObject to learn more. */
-    void setTag(String tag, ByteString value);
+    def setTag(tag : String, value : ByteString) : Unit
 
     /** Returns a copy of all the tags held by this object. */
-    public Map<String, ByteString> getTags();
+    def getTags() : Map[String, ByteString]
 }

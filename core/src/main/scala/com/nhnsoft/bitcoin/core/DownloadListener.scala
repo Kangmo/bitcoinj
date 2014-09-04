@@ -26,20 +26,23 @@ import java.util.concurrent.Semaphore;
 
 // TODO: Rename this to DownloadProgressTracker or something more appropriate.
 
+object DownloadListener {
+    private val log = LoggerFactory.getLogger(getClass)
+}
 /**
  * <p>An implementation of {@link AbstractPeerEventListener} that listens to chain download events and tracks progress
  * as a percentage. The default implementation prints progress to stdout, but you can subclass it and override the
  * progress method to update a GUI instead.</p>
  */
-public class DownloadListener extends AbstractPeerEventListener {
-    private static final Logger log = LoggerFactory.getLogger(DownloadListener.class);
-    private int originalBlocksLeft = -1;
-    private int lastPercent = 0;
-    private Semaphore done = new Semaphore(0);
-    private boolean caughtUp = false;
+class DownloadListener extends AbstractPeerEventListener {
+    import DownloadListener._
 
-    @Override
-    public void onChainDownloadStarted(Peer peer, int blocksLeft) {
+    private var originalBlocksLeft = -1;
+    private var lastPercent = 0;
+    private var done = new Semaphore(0);
+    private var caughtUp = false;
+
+    override def onChainDownloadStarted(peer : Peer, blocksLeft : Int) {
         startDownload(blocksLeft);
         // Only mark this the first time, because this method can be called more than once during a chain download
         // if we switch peers during it.
@@ -53,8 +56,7 @@ public class DownloadListener extends AbstractPeerEventListener {
         }
     }
 
-    @Override
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
+    override def onBlocksDownloaded(peer : Peer, block : Block, blocksLeft : Int) {
         if (caughtUp)
             return;
 
@@ -67,10 +69,10 @@ public class DownloadListener extends AbstractPeerEventListener {
         if (blocksLeft < 0 || originalBlocksLeft <= 0)
             return;
 
-        double pct = 100.0 - (100.0 * (blocksLeft / (double) originalBlocksLeft));
-        if ((int) pct != lastPercent) {
+        val pct : Double = 100.0 - (100.0 * ( blocksLeft.toDouble / originalBlocksLeft.toDouble));
+        if ( pct.toInt != lastPercent) {
             progress(pct, blocksLeft, new Date(block.getTimeSeconds() * 1000));
-            lastPercent = (int) pct;
+            lastPercent = pct.toInt;
         }
     }
 
@@ -80,9 +82,9 @@ public class DownloadListener extends AbstractPeerEventListener {
      * @param pct  the percentage of chain downloaded, estimated
      * @param date the date of the last block downloaded
      */
-    protected void progress(double pct, int blocksSoFar, Date date) {
-        log.info(String.format("Chain download %d%% done with %d blocks to go, block date %s", (int) pct,
-                blocksSoFar, DateFormat.getDateTimeInstance().format(date)));
+    protected def progress(pct : Double, blocksSoFar : Int, date : Date) {
+        val blockDate = DateFormat.getDateTimeInstance().format(date)
+        log.info(s"Chain download ${pct.toInt}% done with ${blocksSoFar} blocks to go, block date ${blockDate}");
     }
 
     /**
@@ -90,23 +92,24 @@ public class DownloadListener extends AbstractPeerEventListener {
      *
      * @param blocks the number of blocks to download, estimated
      */
-    protected void startDownload(int blocks) {
+    protected def startDownload(blocks : Int ) {
         if (blocks > 0 && originalBlocksLeft == -1)
             log.info("Downloading block chain of size " + blocks + ". " +
-                    (blocks > 1000 ? "This may take a while." : ""));
+                    ( if (blocks > 1000) "This may take a while." else ""));
 
     }
 
     /**
      * Called when we are done downloading the block chain.
      */
-    protected void doneDownload() {
+    protected def doneDownload() {
     }
 
     /**
      * Wait for the chain to be downloaded.
      */
-    public void await() throws InterruptedException {
+    @throws( classOf[InterruptedException] )
+    def await() {
         done.acquire();
     }
 }

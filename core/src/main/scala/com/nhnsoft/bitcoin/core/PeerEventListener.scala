@@ -25,7 +25,7 @@ import java.util.List;
  * they can pre-filter messages before they are procesesed by a {@link Peer} or {@link PeerGroup}, and they can
  * provide transactions to remote peers when they ask for them.</p>
  */
-public interface PeerEventListener {
+trait PeerEventListener {
     /**
      * Called on a Peer thread when a block is received.<p>
      *
@@ -35,7 +35,7 @@ public interface PeerEventListener {
      * @param block      the downloaded block
      * @param blocksLeft the number of blocks left to download
      */
-    public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft);
+    def onBlocksDownloaded(peer : Peer, block : Block, blocksLeft : Int) : Unit
 
     /**
      * Called when a download is started with the initial number of blocks to be downloaded.
@@ -43,7 +43,7 @@ public interface PeerEventListener {
      * @param peer       the peer receiving the block
      * @param blocksLeft the number of blocks left to download
      */
-    public void onChainDownloadStarted(Peer peer, int blocksLeft);
+    def onChainDownloadStarted(peer : Peer, blocksLeft : Int) : Unit
 
     /**
      * Called when a peer is connected. If this listener is registered to a {@link Peer} instead of a {@link PeerGroup},
@@ -52,7 +52,7 @@ public interface PeerEventListener {
      * @param peer
      * @param peerCount the total number of connected peers
      */
-    public void onPeerConnected(Peer peer, int peerCount);
+    def onPeerConnected(peer : Peer, peerCount : Int ) : Unit
 
     /**
      * Called when a peer is disconnected. Note that this won't be called if the listener is registered on a
@@ -62,7 +62,7 @@ public interface PeerEventListener {
      * @param peer
      * @param peerCount the total number of connected peers
      */
-    public void onPeerDisconnected(Peer peer, int peerCount);
+    def onPeerDisconnected(peer : Peer, peerCount : Int) : Unit
 
     /**
      * <p>Called when a message is received by a peer, before the message is processed. The returned message is
@@ -73,12 +73,12 @@ public interface PeerEventListener {
      * <p>Note that this will never be called if registered with any executor other than
      * {@link com.nhnsoft.bitcoin.utils.Threading#SAME_THREAD}</p>
      */
-    public Message onPreMessageReceived(Peer peer, Message m);
+    def onPreMessageReceived(peer : Peer, m : Message) : Message
 
     /**
      * Called when a new transaction is broadcast over the network.
      */
-    public void onTransaction(Peer peer, Transaction t);
+    def onTransaction(peer :  Peer, t : Transaction) : Unit
 
     /**
      * <p>Called when a peer receives a getdata message, usually in response to an "inv" being broadcast. Return as many
@@ -88,5 +88,5 @@ public interface PeerEventListener {
      * {@link com.nhnsoft.bitcoin.utils.Threading#SAME_THREAD}</p>
      */
     @Nullable
-    public List<Message> getData(Peer peer, GetDataMessage m);
+    def getData(peer : Peer, m : GetDataMessage) : List[Message]
 }

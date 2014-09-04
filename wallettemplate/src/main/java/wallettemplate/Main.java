@@ -1,13 +1,13 @@
 package wallettemplate;
 
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.kits.WalletAppKit;
-import com.google.bitcoin.params.MainNetParams;
-import com.google.bitcoin.params.RegTestParams;
-import com.google.bitcoin.params.TestNet3Params;
-import com.google.bitcoin.utils.BriefLogFormatter;
-import com.google.bitcoin.utils.Threading;
-import com.google.bitcoin.wallet.DeterministicSeed;
+import com.nhnsoft.bitcoin.core.NetworkParameters;
+import com.nhnsoft.bitcoin.kits.WalletAppKit;
+import com.nhnsoft.bitcoin.params.MainNetParams;
+import com.nhnsoft.bitcoin.params.RegTestParams;
+import com.nhnsoft.bitcoin.params.TestNet3Params;
+import com.nhnsoft.bitcoin.utils.BriefLogFormatter;
+import com.nhnsoft.bitcoin.utils.Threading;
+import com.nhnsoft.bitcoin.wallet.DeterministicSeed;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

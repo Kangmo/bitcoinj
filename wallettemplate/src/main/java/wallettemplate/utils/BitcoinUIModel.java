@@ -1,6 +1,6 @@
 package wallettemplate.utils;
 
-import com.google.bitcoin.core.*;
+import com.nhnsoft.bitcoin.core.*;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;

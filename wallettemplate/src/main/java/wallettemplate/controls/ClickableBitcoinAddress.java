@@ -1,7 +1,7 @@
 package wallettemplate.controls;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.uri.BitcoinURI;
+import com.nhnsoft.bitcoin.core.Address;
+import com.nhnsoft.bitcoin.uri.BitcoinURI;
 import de.jensd.fx.fontawesome.AwesomeDude;
 import de.jensd.fx.fontawesome.AwesomeIcon;
 import javafx.beans.binding.StringExpression;

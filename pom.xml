@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.google</groupId>
+  <groupId>com.nhnsoft</groupId>
   <artifactId>bitcoinj-parent</artifactId>
   <version>0.12-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -21,9 +21,9 @@
   </parent>
 
   <scm>
-    <connection>scm:git:https://github.com/bitcoinj/bitcoinj</connection>
-    <developerConnection>scm:git:https://github.com/bitcoinj/bitcoinj</developerConnection>
-    <url>scm:git:https://github.com/bitcoinj/bitcoinj</url>
+    <connection>scm:git:https://github.com/kangmo/bitcoinj</connection>
+    <developerConnection>scm:git:https://github.com/kangmo/bitcoinj</developerConnection>
+    <url>scm:git:https://github.com/kangmo/bitcoinj</url>
   </scm>
 
   <name>bitcoinj Parent</name>

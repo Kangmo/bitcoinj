@@ -1,7 +1,7 @@
 package wallettemplate;
 
-import com.google.bitcoin.crypto.MnemonicCode;
-import com.google.bitcoin.wallet.DeterministicSeed;
+import com.nhnsoft.bitcoin.crypto.MnemonicCode;
+import com.nhnsoft.bitcoin.wallet.DeterministicSeed;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.util.concurrent.Service;

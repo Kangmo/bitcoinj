@@ -26,7 +26,7 @@ import java.util.List;
  * <p>Implementors are called when the contents of the wallet changes, for instance due to receiving/sending money
  * or a block chain re-organize. It may be convenient to derive from {@link AbstractWalletEventListener} instead.</p>
  */
-public interface WalletEventListener extends KeyChainEventListener {
+trait WalletEventListener extends KeyChainEventListener {
     /**
      * This is called when a transaction is seen that sends coins <b>to</b> this wallet, either because it
      * was broadcast across the network or because a block was received. If a transaction is seen when it was broadcast,
@@ -40,7 +40,7 @@ public interface WalletEventListener extends KeyChainEventListener {
      * @param prevBalance Balance before the coins were received.
      * @param newBalance  Current balance of the wallet. This is the 'estimated' balance.
      */
-    void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance);
+    def onCoinsReceived(wallet : Wallet, tx : Transaction, prevBalance : Coin, newBalance : Coin) : Unit
 
     /**
      * This is called when a transaction is seen that sends coins <b>from</b> this wallet, either
@@ -58,7 +58,7 @@ public interface WalletEventListener extends KeyChainEventListener {
      * @param prevBalance  The wallets balance before this transaction was seen.
      * @param newBalance   The wallets balance after this transaction was seen. This is the 'estimated' balance.
      */
-    void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance);
+    def onCoinsSent(wallet : Wallet, tx : Transaction, prevBalance : Coin, newBalance : Coin) : Unit
 
     // TODO: Finish onReorganize to be more useful.
     /**
@@ -71,7 +71,7 @@ public interface WalletEventListener extends KeyChainEventListener {
      *
      * <p>It is safe to use methods of wallet whilst inside this callback.</p>
      */
-    void onReorganize(Wallet wallet);
+    def onReorganize(wallet : Wallet) : Unit
 
     /**
      * <p>Called when a transaction changes its confidence level. You can also attach event listeners to
@@ -96,7 +96,7 @@ public interface WalletEventListener extends KeyChainEventListener {
      * received (because the depth has changed). <b>If you want to update a UI view from the contents of the wallet
      * it is more efficient to use onWalletChanged instead.</b></p>
      */
-    void onTransactionConfidenceChanged(Wallet wallet, Transaction tx);
+    def onTransactionConfidenceChanged(wallet : Wallet, tx : Transaction) : Unit
 
     /**
      * <p>Designed for GUI applications to refresh their transaction lists. This callback is invoked in the following
@@ -115,8 +115,8 @@ public interface WalletEventListener extends KeyChainEventListener {
      * this rather than onTransactionConfidenceChanged() + onReorganize() because you only get one callback per block
      * rather than one per transaction per block. Note that this is <b>not</b> called when a key is added. </p>
      */
-    void onWalletChanged(Wallet wallet);
+    def onWalletChanged(wallet : Wallet) : Unit
 
     /** Called whenever a new watched script is added to the wallet. */
-    void onScriptsAdded(Wallet wallet, List<Script> scripts);
+    def onScriptsAdded(wallet : Wallet, scripts : List[Script]) : Unit
 }

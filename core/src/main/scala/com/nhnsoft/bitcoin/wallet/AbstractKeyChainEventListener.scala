@@ -21,8 +21,6 @@ import com.nhnsoft.bitcoin.core.ECKey;
 
 import java.util.List;
 
-public class AbstractKeyChainEventListener implements KeyChainEventListener {
-    @Override
-    public void onKeysAdded(List<ECKey> keys) {
-    }
+class AbstractKeyChainEventListener extends KeyChainEventListener {
+    override def onKeysAdded(keys : List[ECKey]) {}
 }

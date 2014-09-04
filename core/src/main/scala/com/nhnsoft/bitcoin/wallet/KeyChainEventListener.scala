@@ -20,11 +20,11 @@ import com.nhnsoft.bitcoin.core.ECKey;
 
 import java.util.List;
 
-public interface KeyChainEventListener {
+trait KeyChainEventListener {
     /**
      * Called whenever a new key is added to the key chain, whether that be via an explicit addition or due to some
      * other automatic derivation. See the documentation for your {@link KeyChain} implementation for details on what
      * can trigger this event.
      */
-    void onKeysAdded(List<ECKey> keys);
+    def onKeysAdded(keys : List[ECKey]) : Unit
 }

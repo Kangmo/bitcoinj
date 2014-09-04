@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Default no-op implementation of {@link BlockChainListener}.
  */
-class AbstractBlockChainListener extends BlockChainListener {
+abstract class AbstractBlockChainListener extends BlockChainListener {
     override def notifyNewBestBlock(block : StoredBlock) /* throws VerificationException */ {}
 
     override def reorganize(splitPoint : StoredBlock, oldBlocks : List[StoredBlock], newBlocks : List[StoredBlock]) /* throws VerificationException */ {}

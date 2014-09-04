@@ -17,13 +17,5 @@
 
 package com.nhnsoft.bitcoin.core;
 
-@SuppressWarnings("serial")
-public class AddressFormatException extends Exception {
-    public AddressFormatException() {
-        super();
-    }
-
-    public AddressFormatException(String message) {
-        super(message);
-    }
-}
+@SuppressWarnings(Array("serial"))
+class AddressFormatException(message : String) extends Exception(message)

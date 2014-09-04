@@ -50,7 +50,7 @@ public class LocalTransactionSigner extends StatelessTransactionSigner {
 
     @Override
     public boolean signInputs(ProposedTransaction propTx, KeyBag keyBag) {
-        Transaction tx = propTx.partialTx;
+        Transaction tx = propTx.partialTx();
         int numInputs = tx.getInputs().size();
         for (int i = 0; i < numInputs; i++) {
             TransactionInput txIn = tx.getInput(i);
@@ -102,7 +102,7 @@ public class LocalTransactionSigner extends StatelessTransactionSigner {
                 // for P2SH inputs we need to share derivation path of the signing key with other signers, so that they
                 // use correct key to calculate their signatures
                 if (key instanceof DeterministicKey)
-                    propTx.keyPaths.put(scriptPubKey, (((DeterministicKey) key).getPath()));
+                    propTx.keyPaths().put(scriptPubKey, (((DeterministicKey) key).getPath()));
             } catch (ECKey.KeyIsEncryptedException e) {
                 throw e;
             } catch (ECKey.MissingPrivateKeyException e) {

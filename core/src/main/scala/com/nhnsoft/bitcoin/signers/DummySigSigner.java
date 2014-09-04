@@ -37,10 +37,10 @@ public class DummySigSigner extends StatelessTransactionSigner {
 
     @Override
     public boolean signInputs(ProposedTransaction propTx, KeyBag keyBag) {
-        int numInputs = propTx.partialTx.getInputs().size();
+        int numInputs = propTx.partialTx().getInputs().size();
         byte[] dummySig = TransactionSignature.dummy().encodeToBitcoin();
         for (int i = 0; i < numInputs; i++) {
-            TransactionInput txIn = propTx.partialTx.getInput(i);
+            TransactionInput txIn = propTx.partialTx().getInput(i);
             if (txIn.getConnectedOutput() == null) {
                 log.warn("Missing connected output, assuming input {} is already signed.", i);
                 continue;

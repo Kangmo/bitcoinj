@@ -48,7 +48,7 @@ public abstract class CustomTransactionSigner extends StatelessTransactionSigner
 
     @Override
     public boolean signInputs(ProposedTransaction propTx, KeyBag keyBag) {
-        Transaction tx = propTx.partialTx;
+        Transaction tx = propTx.partialTx();
         int numInputs = tx.getInputs().size();
         for (int i = 0; i < numInputs; i++) {
             TransactionInput txIn = tx.getInput(i);
@@ -70,7 +70,7 @@ public abstract class CustomTransactionSigner extends StatelessTransactionSigner
             }
 
             Sha256Hash sighash = tx.hashForSignature(i, redeemData.redeemScript, Transaction.SigHash.ALL, false);
-            SignatureAndKey sigKey = getSignature(sighash, propTx.keyPaths.get(scriptPubKey));
+            SignatureAndKey sigKey = getSignature(sighash, propTx.keyPaths().get(scriptPubKey));
             TransactionSignature txSig = new TransactionSignature(sigKey.sig, Transaction.SigHash.ALL, false);
             int sigIndex = redeemData.getKeyIndex(sigKey.pubKey);
             if (sigIndex < 0)

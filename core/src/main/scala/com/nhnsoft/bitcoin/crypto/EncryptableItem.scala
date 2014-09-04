@@ -26,19 +26,21 @@ import javax.annotation.Nullable;
  * {@link com.nhnsoft.bitcoin.crypto.KeyCrypter}, yielding an {@link com.nhnsoft.bitcoin.crypto.EncryptedData}, and
  * which can have a creation time associated with it.
  */
-public interface EncryptableItem {
+trait EncryptableItem {
     /** Returns whether the item is encrypted or not. If it is, then {@link #getSecretBytes()} will return null. */
-    public boolean isEncrypted();
+    def isEncrypted() : Boolean
 
     /** Returns the raw bytes of the item, if not encrypted, or null if encrypted or the secret is missing. */
-    @Nullable public byte[] getSecretBytes();
+    @Nullable 
+    def getSecretBytes() : Array[Byte]
 
     /** Returns the initialization vector and encrypted secret bytes, or null if not encrypted. */
-    @Nullable public EncryptedData getEncryptedData();
+    @Nullable 
+    def getEncryptedData() : EncryptedData
 
     /** Returns an enum constant describing what algorithm was used to encrypt the key or UNENCRYPTED. */
-    public Protos.Wallet.EncryptionType getEncryptionType();
+    def getEncryptionType() : Protos.Wallet.EncryptionType
 
     /** Returns the time in seconds since the UNIX epoch at which this encryptable item was first created/derived. */
-    public long getCreationTimeSeconds();
+    def getCreationTimeSeconds() : Long
 }

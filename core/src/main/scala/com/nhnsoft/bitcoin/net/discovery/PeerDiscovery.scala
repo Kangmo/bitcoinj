@@ -24,12 +24,13 @@ import java.util.concurrent.TimeUnit;
  * A PeerDiscovery object is responsible for finding addresses of other nodes in the Bitcoin P2P network. Note that
  * the addresses returned may or may not be accepting connections.
  */
-public interface PeerDiscovery {
+trait PeerDiscovery {
     // TODO: Flesh out this interface a lot more.
 
     /** Returns an array of addresses. This method may block. */
-    InetSocketAddress[] getPeers(long timeoutValue, TimeUnit timeoutUnit) throws PeerDiscoveryException;
+    @throws( classOf[PeerDiscoveryException] )
+    def getPeers(timeoutValue : Long, timeoutUnit : TimeUnit) : Array[InetSocketAddress] 
 
     /** Stops any discovery in progress when we want to shut down quickly. */
-    void shutdown();
+    def shutdown() : Unit
 }

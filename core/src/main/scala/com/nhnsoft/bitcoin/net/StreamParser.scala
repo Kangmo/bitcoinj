@@ -23,12 +23,12 @@ import java.nio.ByteBuffer;
  * A generic handler which is used in {@link NioServer}, {@link NioClient} and {@link BlockingClient} to handle incoming
  * data streams.
  */
-public interface StreamParser {
+trait StreamParser {
     /** Called when the connection socket is closed */
-    void connectionClosed();
+    def connectionClosed() : Unit
 
     /** Called when the connection socket is first opened */
-    void connectionOpened();
+    def connectionOpened() : Unit
 
     /**
      * <p>Called when new bytes are available from the remote end. This should only ever be called by the single
@@ -49,17 +49,18 @@ public interface StreamParser {
      *
      * @return The amount of bytes consumed which should not be provided again
      */
-    int receiveBytes(ByteBuffer buff) throws Exception;
+    @throws( classOf[Exception] )
+    def receiveBytes(buff : ByteBuffer) : Int
 
     /**
      * Called when this parser is attached to an upstream write target (ie a low-level connection handler). This
      * writeTarget should be stored and used to close the connection or write data to the socket.
      */
-    void setWriteTarget(MessageWriteTarget writeTarget);
+    def setWriteTarget(writeTarget : MessageWriteTarget) : Unit
 
     /**
      * Returns the maximum message size of a message on the socket. This is used in calculating size of buffers to
      * allocate.
      */
-    int getMaxMessageSize();
+    def getMaxMessageSize() : Int
 }

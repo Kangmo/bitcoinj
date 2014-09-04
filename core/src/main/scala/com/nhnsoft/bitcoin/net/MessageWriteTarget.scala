@@ -22,14 +22,15 @@ import java.io.IOException;
 /**
  * A target to which messages can be written/connection can be closed
  */
-public interface MessageWriteTarget {
+trait MessageWriteTarget {
     /**
      * Writes the given bytes to the remote server.
      */
-    void writeBytes(byte[] message) throws IOException;
+    @throws( classOf[IOException] )
+    def writeBytes(message : Array[Byte]) : Unit
     /**
      * Closes the connection to the server, triggering the {@link StreamParser#connectionClosed()}
      * event on the network-handling thread where all callbacks occur.
      */
-    void closeConnection();
+    def closeConnection() : Unit
 }

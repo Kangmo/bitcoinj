@@ -24,28 +24,28 @@ import java.util.concurrent.locks.Lock;
  * Note that an implementer is responsible for calling {@link PeerGroup#recalculateFastCatchupAndFilter(boolean)} whenever a
  * change occurs which effects the data provided via this interface.
  */
-public interface PeerFilterProvider {
+trait PeerFilterProvider {
     /**
      * Returns the earliest timestamp (seconds since epoch) for which full/bloom-filtered blocks must be downloaded.
      * Blocks with timestamps before this time will only have headers downloaded. 0 requires that all blocks be
      * downloaded, and thus this should default to {@link System#currentTimeMillis()}/1000.
      */
-    public long getEarliestKeyCreationTime();
+    def getEarliestKeyCreationTime() : Long
 
     /**
      * Gets the number of elements that will be added to a bloom filter returned by
      * {@link PeerFilterProvider#getBloomFilter(int, double, long)}
      */
-    public int getBloomFilterElementCount();
+    def getBloomFilterElementCount() : Int
 
     /**
      * Gets a bloom filter that contains all the necessary elements for the listener to receive relevant transactions.
      * Default value should be an empty bloom filter with the given size, falsePositiveRate, and nTweak.
      */
-    public BloomFilter getBloomFilter(int size, double falsePositiveRate, long nTweak);
+    def getBloomFilter(size : Int, falsePositiveRate : Double, nTweak : Long) : BloomFilter
 
     /** Whether this filter provider depends on the server updating the filter on all matches */
-    boolean isRequiringUpdateAllBloomFilter();
+    def isRequiringUpdateAllBloomFilter() : Boolean
 
     /**
      * Returns an object that will be locked before any other methods are called and unlocked afterwards. You must
@@ -56,5 +56,5 @@ public interface PeerFilterProvider {
      * elements. For instance, a Wallet that has keys added to it whilst a filter recalc is in progress could cause
      * experience this race.
      */
-    public Lock getLock();
+    def getLock() : Lock
 }

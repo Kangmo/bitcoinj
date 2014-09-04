@@ -28,15 +28,15 @@ import java.net.SocketAddress;
  * <p>When the service is {@link com.google.common.util.concurrent.Service#stop()}ed, all connections will be closed and
  * the appropriate connectionClosed() calls must be made.</p>
  */
-public interface ClientConnectionManager extends Service {
+trait ClientConnectionManager extends Service {
     /**
      * Creates a new connection to the given address, with the given parser used to handle incoming data.
      */
-    void openConnection(SocketAddress serverAddress, StreamParser parser);
+    def openConnection(serverAddress : SocketAddress, parser : StreamParser) : Unit
 
     /** Gets the number of connected peers */
-    int getConnectedClientCount();
+    def getConnectedClientCount() : Int
 
     /** Closes n peer connections */
-    void closeConnections(int n);
+    def closeConnections(n : Int) : Unit
 }

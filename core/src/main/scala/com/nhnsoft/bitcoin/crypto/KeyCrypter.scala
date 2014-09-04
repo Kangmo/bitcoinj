@@ -34,13 +34,13 @@ import java.io.Serializable;
  * <p>There can be different algorithms used for encryption/ decryption so the getUnderstoodEncryptionType is used
  * to determine whether any given KeyCrypter can understand the type of encrypted data you have.</p>
  */
-public interface KeyCrypter extends Serializable {
+trait KeyCrypter extends Serializable {
 
     /**
      * Return the EncryptionType enum value which denotes the type of encryption/ decryption that this KeyCrypter
      * can understand.
      */
-    public EncryptionType getUnderstoodEncryptionType();
+    def getUnderstoodEncryptionType() : EncryptionType
 
     /**
      * Create a KeyParameter (which typically contains an AES key)
@@ -48,14 +48,16 @@ public interface KeyCrypter extends Serializable {
      * @return KeyParameter The KeyParameter which typically contains the AES key to use for encrypting and decrypting
      * @throws KeyCrypterException
      */
-    public KeyParameter deriveKey(CharSequence password) throws KeyCrypterException;
+    @throws( classOf[KeyCrypterException] )
+    def deriveKey(password : CharSequence) : KeyParameter
 
     /**
      * Decrypt the provided encrypted bytes, converting them into unencrypted bytes.
      *
      * @throws KeyCrypterException if decryption was unsuccessful.
      */
-    public byte[] decrypt(EncryptedData encryptedBytesToDecode, KeyParameter aesKey) throws KeyCrypterException;
+    @throws( classOf[KeyCrypterException] )
+    def decrypt(encryptedBytesToDecode : EncryptedData, aesKey : KeyParameter) : Array[Byte]
 
     /**
      * Encrypt the supplied bytes, converting them into ciphertext.
@@ -63,5 +65,6 @@ public interface KeyCrypter extends Serializable {
      * @return encryptedPrivateKey An encryptedPrivateKey containing the encrypted bytes and an initialisation vector.
      * @throws KeyCrypterException if encryption was unsuccessful
      */
-    public EncryptedData encrypt(byte[] plainBytes, KeyParameter aesKey) throws KeyCrypterException;
+    @throws( classOf[KeyCrypterException] )
+    def encrypt(plainBytes : Array[Byte], aesKey : KeyParameter) : EncryptedData
 }

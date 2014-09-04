@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  * A KeyBag is simply an object that can map public keys, their 160-bit hashes and script hashes to ECKey
  * and {@link RedeemData} objects.
  */
-public interface KeyBag {
+trait KeyBag {
     /**
      * Locates a keypair from the keychain given the hash of the public key. This is needed when finding out which
      * key we need to use to redeem a transaction output.
@@ -33,7 +33,7 @@ public interface KeyBag {
      * @return ECKey object or null if no such key was found.
      */
     @Nullable
-    public ECKey findKeyFromPubHash(byte[] pubkeyHash);
+    def findKeyFromPubHash(pubkeyHash : Array[Byte]) : ECKey
 
     /**
      * Locates a keypair from the keychain given the raw public key bytes.
@@ -41,7 +41,7 @@ public interface KeyBag {
      * @return ECKey or null if no such key was found.
      */
     @Nullable
-    public ECKey findKeyFromPubKey(byte[] pubkey);
+    def findKeyFromPubKey(pubkey : Array[Byte]) : ECKey
 
     /**
      * Locates a redeem data (redeem script and keys) from the keychain given the hash of the script.
@@ -51,6 +51,6 @@ public interface KeyBag {
      * Returns RedeemData object or null if no such data was found.
      */
     @Nullable
-    public RedeemData findRedeemDataFromScriptHash(byte[] scriptHash);
+    def findRedeemDataFromScriptHash(scriptHash : Array[Byte]) : RedeemData
 
 }

@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 /**
  * An encryptable key chain is a key-chain that can be encrypted with a user-provided password or AES key.
  */
-public interface EncryptableKeyChain extends KeyChain {
+trait EncryptableKeyChain extends KeyChain {
     /**
      * Takes the given password, which should be strong, derives a key from it and then invokes
      * {@link #toEncrypted(com.nhnsoft.bitcoin.crypto.KeyCrypter, org.spongycastle.crypto.params.KeyParameter)} with
@@ -34,19 +34,19 @@ public interface EncryptableKeyChain extends KeyChain {
      *
      * @return The derived key, in case you wish to cache it for future use.
      */
-    public EncryptableKeyChain toEncrypted(CharSequence password);
+    def toEncrypted(password : CharSequence) : EncryptableKeyChain
 
     /**
      * Returns a new keychain holding identical/cloned keys to this chain, but encrypted under the given key.
      * Old keys and keychains remain valid and so you should ensure you don't accidentally hold references to them.
      */
-    public EncryptableKeyChain toEncrypted(KeyCrypter keyCrypter, KeyParameter aesKey);
+    def toEncrypted(keyCrypter : KeyCrypter, aesKey : KeyParameter) : EncryptableKeyChain
 
     /**
      * Decrypts the key chain with the given password. See {@link #toDecrypted(org.spongycastle.crypto.params.KeyParameter)}
      * for details.
      */
-    public EncryptableKeyChain toDecrypted(CharSequence password);
+    def toDecrypted(password : CharSequence) : EncryptableKeyChain
 
     /**
      * Decrypt the key chain with the given AES key and whatever {@link KeyCrypter} is already set. Note that if you
@@ -57,12 +57,12 @@ public interface EncryptableKeyChain extends KeyChain {
      *               create from a password)
      * @throws KeyCrypterException Thrown if the wallet decryption fails. If so, the wallet state is unchanged.
      */
-    public EncryptableKeyChain toDecrypted(KeyParameter aesKey);
+    def toDecrypted(aesKey : KeyParameter) : EncryptableKeyChain
 
-    public boolean checkPassword(CharSequence password);
-    public boolean checkAESKey(KeyParameter aesKey);
+    def checkPassword(password : CharSequence) : Boolean
+    def checkAESKey(aesKey : KeyParameter) : Boolean
 
     /** Returns the key crypter used by this key chain, or null if it's not encrypted. */
     @Nullable
-    public KeyCrypter getKeyCrypter();
+    def getKeyCrypter() : KeyCrypter
 }

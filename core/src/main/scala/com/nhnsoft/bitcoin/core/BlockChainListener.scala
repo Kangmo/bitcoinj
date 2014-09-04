@@ -24,7 +24,7 @@ import java.util.List;
  * happen that modify the state of the chain, for example: new blocks being received, a re-org occurring, or the
  * best chain head changing.
  */
-public interface BlockChainListener {
+trait BlockChainListener {
     /**
      * Called when a new block on the best chain is seen, after relevant transactions are extracted and sent to
      * us via either {@link #receiveFromBlock(Transaction, StoredBlock, com.nhnsoft.bitcoin.core.BlockChain.NewBlockType, int)}
@@ -33,7 +33,7 @@ public interface BlockChainListener {
      * the new best block: your reorganize implementation is expected to do whatever would normally be done do for a new
      * best block in this case.
      */
-    void notifyNewBestBlock(StoredBlock block) throws VerificationException;
+    def notifyNewBestBlock(block : StoredBlock) : Unit; // throws VerificationException;
 
     /**
      * Called by the {@link BlockChain} when the best chain (representing total work done) has changed. In this case,
@@ -43,8 +43,8 @@ public interface BlockChainListener {
      *
      * The oldBlocks/newBlocks lists are ordered height-wise from top first to bottom last (i.e. newest blocks first).
      */
-    void reorganize(StoredBlock splitPoint, List<StoredBlock> oldBlocks,
-                    List<StoredBlock> newBlocks) throws VerificationException;
+    def reorganize(splitPoint : StoredBlock, oldBlocks : List[StoredBlock],
+                    newBlocks : List[StoredBlock] ) : Unit; //throws VerificationException;
 
     /**
      * Returns true if the given transaction is interesting to the listener. If yes, then the transaction will
@@ -53,7 +53,7 @@ public interface BlockChainListener {
      * full blocks on mobile phones. It's likely the method will be removed in future and replaced with an alternative
      * mechanism that involves listeners providing all keys that are interesting.
      */
-    boolean isTransactionRelevant(Transaction tx) throws ScriptException;
+    def isTransactionRelevant(tx : Transaction) : Boolean; //throws ScriptException;
 
     /**
      * <p>Called by the {@link BlockChain} when we receive a new block that contains a relevant transaction.</p>
@@ -68,10 +68,10 @@ public interface BlockChainListener {
      * that a transaction occurred at, so the relativity count is not reflective of anything in an absolute sense but
      * rather exists only to order the transaction relative to the others.</p>
      */
-    void receiveFromBlock(Transaction tx, StoredBlock block,
-                          BlockChain.NewBlockType blockType,
-                          int relativityOffset) throws VerificationException;
-    
+    def receiveFromBlock(tx : Transaction, block : StoredBlock,
+                          blockType :  AbstractBlockChain.NewBlockType,
+                          relativityOffset : Int) : Unit; // throws VerificationException;
+
     /**
      * <p>Called by the {@link BlockChain} when we receive a new {@link FilteredBlock} that contains the given
      * transaction hash in its merkle tree.</p>
@@ -90,7 +90,7 @@ public interface BlockChainListener {
      *
      * @return whether the transaction is known about i.e. was considered relevant previously.
      */
-    boolean notifyTransactionIsInBlock(Sha256Hash txHash, StoredBlock block,
-                                       BlockChain.NewBlockType blockType,
-                                       int relativityOffset) throws VerificationException;
+    def notifyTransactionIsInBlock(txHash : Sha256Hash, block : StoredBlock,
+                                       blockType : AbstractBlockChain.NewBlockType,
+                                       relativityOffset : Int ) : Boolean; // throws VerificationException;
 }

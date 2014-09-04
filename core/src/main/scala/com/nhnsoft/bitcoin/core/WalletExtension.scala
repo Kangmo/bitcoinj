@@ -27,19 +27,21 @@ package com.nhnsoft.bitcoin.core;
  *
  * <p>Note that extensions are singletons - you cannot add two objects that provide the same ID to the same wallet.</p>
  */
-public interface WalletExtension {
+trait WalletExtension {
     /** Returns a Java package/class style name used to disambiguate this extension from others. */
-    public String getWalletExtensionID();
+    def getWalletExtensionID() : String
 
     /**
      * If this returns true, the mandatory flag is set when the wallet is serialized and attempts to load it without
      * the extension being in the wallet will throw an exception. This method should not change its result during
      * the objects lifetime.
      */
-    public boolean isWalletExtensionMandatory();
+    def isWalletExtensionMandatory() : Boolean
 
     /** Returns bytes that will be saved in the wallet. */
-    public byte[] serializeWalletExtension();
+    def serializeWalletExtension() : Array[Byte]
+    
     /** Loads the contents of this object from the wallet. */
-    public void deserializeWalletExtension(Wallet containingWallet, byte[] data) throws Exception;
+    @throws( classOf[Exception] )
+    def deserializeWalletExtension(containingWallet : Wallet, data : Array[Byte]) : Unit
 }

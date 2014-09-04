@@ -23,11 +23,12 @@ import javax.annotation.Nullable;
 /**
  * A factory which generates new {@link StreamParser}s when a new connection is opened.
  */
-public interface StreamParserFactory {
+trait StreamParserFactory {
     /**
      * Returns a new handler or null to have the connection close.
      * @param inetAddress The client's (IP) address
      * @param port The remote port on the client side
      */
-    @Nullable public StreamParser getNewParser(InetAddress inetAddress, int port);
+    @Nullable 
+    def getNewParser(inetAddress : InetAddress, port : Int) : StreamParser
 }

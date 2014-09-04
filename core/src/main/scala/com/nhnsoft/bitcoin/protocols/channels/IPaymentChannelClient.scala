@@ -31,12 +31,13 @@ import javax.annotation.Nullable;
  * in {@link PaymentChannelClient}, but alternative implementations are possible. For example, an implementor might
  * send RPCs to a separate (locally installed or even remote) wallet app rather than implementing the algorithm locally.
  */
-public interface IPaymentChannelClient {
+trait IPaymentChannelClient {
     /**
      * Called when a message is received from the server. Processes the given message and generates events based on its
      * content.
      */
-    void receiveMessage(Protos.TwoWayChannelMessage msg) throws InsufficientMoneyException;
+    @throws( classOf[InsufficientMoneyException] )
+    def receiveMessage(msg : Protos.TwoWayChannelMessage) : Unit
 
     /**
      * <p>Called when the connection to the server terminates.</p>
@@ -48,7 +49,7 @@ public interface IPaymentChannelClient {
      * {@link PaymentChannelClient.ClientConnection#destroyConnection(com.nhnsoft.bitcoin.protocols.channels.PaymentChannelCloseException.CloseReason)} or
      * {@link IPaymentChannelClient#settle()} is called, to actually handle the connection close logic.</p>
      */
-    void connectionClosed();
+    def connectionClosed() : Unit
 
     /**
      * <p>Settles the channel, notifying the server it can broadcast the most recent payment transaction.</p>
@@ -60,7 +61,8 @@ public interface IPaymentChannelClient {
      *
      * @throws IllegalStateException If the connection is not currently open (ie the CLOSE message cannot be sent)
      */
-    void settle() throws IllegalStateException;
+    @throws( classOf[IllegalStateException] )
+    def settle() : Unit
 
     /**
      * <p>Called to indicate the connection has been opened and messages can now be generated for the server.</p>
@@ -68,7 +70,7 @@ public interface IPaymentChannelClient {
      * <p>Attempts to find a channel to resume and generates a CLIENT_VERSION message for the server based on the
      * result.</p>
      */
-    void connectionOpen();
+    def connectionOpen() : Unit
 
     /**
      * Increments the total value which we pay the server. Note that the amount of money sent may not be the same as the
@@ -85,14 +87,16 @@ public interface IPaymentChannelClient {
      *                               (see {@link PaymentChannelClientConnection#getChannelOpenFuture()} for the second)
      * @return a future that completes when the server acknowledges receipt and acceptance of the payment.
      */
-    ListenableFuture<PaymentIncrementAck> incrementPayment(Coin size, @Nullable ByteString info) throws ValueOutOfRangeException, IllegalStateException;
+    @throws( classOf[ValueOutOfRangeException] )
+    @throws( classOf[IllegalStateException] )
+    def incrementPayment(size : Coin, @Nullable info : ByteString) : ListenableFuture[PaymentIncrementAck];
 
     /**
      * Implements the connection between this client and the server, providing an interface which allows messages to be
      * sent to the server, requests for the connection to the server to be closed, and a callback which occurs when the
      * channel is fully open.
      */
-    interface ClientConnection {
+    trait ClientConnection {
         /**
          * <p>Requests that the given message be sent to the server. There are no blocking requirements for this method,
          * however the order of messages must be preserved.</p>
@@ -105,7 +109,7 @@ public interface IPaymentChannelClient {
          *
          * <p>Called while holding a lock on the {@link com.nhnsoft.bitcoin.protocols.channels.PaymentChannelClient} object - be careful about reentrancy</p>
          */
-        void sendToServer(Protos.TwoWayChannelMessage msg);
+        def sendToServer(msg : Protos.TwoWayChannelMessage) : Unit
 
         /**
          * <p>Requests that the connection to the server be closed. For stateless protocols, note that after this call,
@@ -119,7 +123,7 @@ public interface IPaymentChannelClient {
          *               {@link com.nhnsoft.bitcoin.protocols.channels.PaymentChannelCloseException.CloseReason#CLIENT_REQUESTED_CLOSE} as "unrecoverable error" and all others as
          *               "try again once and see if it works then"
          */
-        void destroyConnection(PaymentChannelCloseException.CloseReason reason);
+        def destroyConnection(reason : PaymentChannelCloseException.CloseReason) : Unit
 
         /**
          * <p>Indicates the channel has been successfully opened and
@@ -131,14 +135,14 @@ public interface IPaymentChannelClient {
          *
          * @param wasInitiated If true, the channel is newly opened. If false, it was resumed.
          */
-        void channelOpen(boolean wasInitiated);
+        def channelOpen(wasInitiated : Boolean) : Unit
     }
 
     /**
      * An implementor of this interface creates payment channel clients that "talk back" with the given connection.
      * The client might be a PaymentChannelClient, or an RPC interface, or something else entirely.
      */
-    interface Factory {
-        IPaymentChannelClient create(String serverPaymentIdentity, ClientConnection connection);
+    trait Factory {
+        def create(serverPaymentIdentity : String, connection : ClientConnection) : IPaymentChannelClient
     }
 }

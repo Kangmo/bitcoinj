@@ -42,8 +42,11 @@ import collection.JavaConversions._;
  * as the length will be provided as part of the header.  If unknown then set to Message.UNKNOWN_LENGTH
  * @throws ProtocolException
  */
+object AddressMessage {
+    private val MAX_ADDRESSES = 1024L
+}
+
 @SerialVersionUID(8058283864924679460L)
-@serializable
 @throws( classOf[ProtocolException] )
 class AddressMessage(
     _params : NetworkParameters, 
@@ -51,16 +54,13 @@ class AddressMessage(
     _offset : Int, 
     _parseLazy : Boolean, 
     _parseRetain : Boolean, 
-    _length : Int) extends Message(_params, _payload, _offset, _parseLazy, _parseRetain, _length) {
-
-    @transient
-    private val MAX_ADDRESSES = 1024L
-
-    private var addresses : List[PeerAddress] = null
+    _length : Int,
+    // kangmo - The addressess field needs to be initialized before the Message constructor is called.
+    // Why? Message constructor calls AddressMessage.parse, which initializes the addresses field.
+    // But if addresses is declared as a field, it initialized by AddressMessage constructor which is called after Message constructor,
+    // resulting in resetting the member to null after parse was called.
+    private var addresses : List[PeerAddress] = null ) extends Message(_params, _payload, _offset, _parseLazy, _parseRetain, _length) {
     
-    @transient
-    private var numAddresses = -1L
-
     /**
      * Contruct a new 'addr' message.
      * @param params NetworkParameters object.
@@ -94,13 +94,13 @@ class AddressMessage(
 
     @throws( classOf[ProtocolException] )
     override def parse() {
-        numAddresses = readVarInt();
+        val numAddresses = readVarInt();
         // Guard against ultra large messages that will crash us.
-        if (numAddresses > MAX_ADDRESSES)
+        if (numAddresses > AddressMessage.MAX_ADDRESSES) {
             throw new ProtocolException("Address message too large.");
+        }
         
         addresses = new ArrayList[PeerAddress](numAddresses.toInt);
-
         var i = 0L;
         for (i <- 0L until numAddresses) {
             val addr = new PeerAddress(params, payload, cursor, protocolVersion, this, parseLazy, parseRetain);
@@ -154,6 +154,7 @@ class AddressMessage(
      */
     def getAddresses() : List[PeerAddress] = {
         maybeParse();
+
         Collections.unmodifiableList(addresses);
     }
 

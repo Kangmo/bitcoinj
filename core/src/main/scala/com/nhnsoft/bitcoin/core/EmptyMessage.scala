@@ -23,61 +23,48 @@ import java.io.OutputStream;
  * Parent class for header only messages that don't have a payload.
  * Currently this includes getaddr, verack and special bitcoinj class UnknownMessage.
  */
-public abstract class EmptyMessage extends Message {
-    private static final long serialVersionUID = 8240801253854151802L;
+@SerialVersionUID(8240801253854151802L)
+class EmptyMessage(params : NetworkParameters, payload : Array[Byte], offset : Int) extends Message(params, payload, offset) {
+    length = 0;
 
-    public EmptyMessage() {
-        length = 0;
+    def this() = this(null, null, -1)
+    def this(params : NetworkParameters) = this(params, null, -1)
+
+
+    @throws( classOf[IOException] )
+    override final protected def bitcoinSerializeToStream(stream : OutputStream) {
     }
 
-    public EmptyMessage(NetworkParameters params) {
-        super(params);
-        length = 0;
-    }
-
-    public EmptyMessage(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
-        super(params, payload, offset);
-        length = 0;
-    }
-
-    @Override
-    final protected void bitcoinSerializeToStream(OutputStream stream) throws IOException {
-    }
-
-    @Override
-    public int getMessageSize() {
-        return 0;
-    }
+    override def getMessageSize() : Int  = 0
 
     /* (non-Javadoc)
       * @see Message#parse()
       */
-    @Override
-    void parse() throws ProtocolException {
+    @throws( classOf[ProtocolException] )
+    override def parse() {
     }
 
     /* (non-Javadoc)
       * @see Message#parseLite()
       */
-    @Override
-    protected void parseLite() throws ProtocolException {
+    @throws( classOf[ProtocolException] )
+    override protected def parseLite() {
         length = 0;
     }
 
     /* (non-Javadoc)
       * @see Message#ensureParsed()
       */
-    @Override
-    public void ensureParsed() throws ProtocolException {
+    @throws( classOf[ProtocolException] )
+    override def ensureParsed() {
         parsed = true;
     }
 
     /* (non-Javadoc)
       * @see Message#bitcoinSerialize()
       */
-    @Override
-    public byte[] bitcoinSerialize() {
-        return new byte[0];
+    override def bitcoinSerialize() : Array[Byte] = {
+        return Array[Byte]();
     }
 
 

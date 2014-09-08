@@ -103,8 +103,24 @@ public abstract class Message implements Serializable {
     Message(NetworkParameters params, byte[] payload, int offset, int protocolVersion, boolean parseLazy, boolean parseRetain, int length) throws ProtocolException {
         this.parseLazy = parseLazy;
         this.parseRetain = parseRetain;
-        this.protocolVersion = protocolVersion;
+
+        // The EmptyMessage subclass calls Message(NetworkParameters params, byte[] payload, int offset) with null params to implement auxiliary constructors.
+        // We need to emulate Message() constructor in this case.
+        if (params == null ) {
+            this.parsed = true;
+            return;
+        }
+
+        // The EmptyMessage subclass calls Message(NetworkParameters params, byte[] payload, int offset) with null payload to implement auxiliary constructors.
+        // We need to emulate Message(NetworkParameters params) in this case.
+        if (payload == null ) {
+            this.params = params;
+            this.parsed = true;
+            return;
+        }
+
         this.params = params;
+        this.protocolVersion = protocolVersion;
         this.payload = payload;
         this.cursor = this.offset = offset;
         this.length = length;
@@ -144,7 +160,7 @@ public abstract class Message implements Serializable {
     }
 
     Message(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
-        this(params, payload, offset, NetworkParameters.PROTOCOL_VERSION, false, false, UNKNOWN_LENGTH);
+        this(params, payload, offset, NetworkParameters.PROTOCOL_VERSION, false, false, UNKNOWN_LENGTH);            
     }
 
     Message(NetworkParameters params, byte[] payload, int offset, boolean parseLazy, boolean parseRetain, int length) throws ProtocolException {

@@ -21,14 +21,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.nhnsoft</groupId>
-        <artifactId>bitcoinj-parent</artifactId>
+        <artifactId>bitcoins-parent</artifactId>
         <version>0.12-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bitcoinj</artifactId>
+    <artifactId>bitcoins</artifactId>
 
-    <name>bitcoinj</name>
-    <description>A Java Bitcoin library</description>
+    <name>bitcoins</name>
+    <description>A Scala Bitcoin library</description>
 
     <packaging>jar</packaging>
 
@@ -47,6 +47,10 @@
         <developer>
             <name>The bitcoinj team</name>
             <email>bitcoinj@googlegroups.com</email>
+        </developer>
+        <developer>
+            <name>Kangmo Kim</name>
+            <email>kangmo.kim@gmail.com</email>
         </developer>
     </developers>
 
@@ -254,7 +258,7 @@
                                 <artifactItem>
                                     <outputDirectory>target/test-classes/</outputDirectory>
                                     <groupId>com.nhnsoft</groupId>
-                                    <artifactId>bitcoinj</artifactId>
+                                    <artifactId>bitcoins</artifactId>
                                     <version>0.12-SNAPSHOT</version>
                                 </artifactItem>
                             </artifactItems>

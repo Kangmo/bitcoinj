@@ -24,7 +24,10 @@ import java.io.OutputStream;
  * Currently this includes getaddr, verack and special bitcoinj class UnknownMessage.
  */
 @SerialVersionUID(8240801253854151802L)
-class EmptyMessage(params : NetworkParameters, payload : Array[Byte], offset : Int) extends Message(params, payload, offset) {
+class EmptyMessage(
+    aParams : NetworkParameters, 
+    aPayload : Array[Byte], 
+    aOffset : Int) extends Message(aParams, aPayload, aOffset) {
     length = 0;
 
     def this() = this(null, null, -1)

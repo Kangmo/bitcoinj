@@ -84,12 +84,12 @@ class AddressMessage(
 
     @throws( classOf[ProtocolException] )
     def this(params : NetworkParameters, payload : Array[Byte], offset : Int) = 
-        this(params, payload, offset, false, false, Message.UNKNOWN_LENGTH);
+        this(params, payload, offset, Message.DEFAULT_PARSE_LAZY, Message.DEFAULT_PARSE_RETAIN, Message.UNKNOWN_LENGTH);
     
 
     @throws( classOf[ProtocolException] )
     def this(_params : NetworkParameters, _payload : Array[Byte]) = 
-        this(_params, _payload, 0, false, false, Message.UNKNOWN_LENGTH);
+        this(_params, _payload, 0, Message.DEFAULT_PARSE_LAZY, Message.DEFAULT_PARSE_RETAIN, Message.UNKNOWN_LENGTH);
     
 
     @throws( classOf[ProtocolException] )

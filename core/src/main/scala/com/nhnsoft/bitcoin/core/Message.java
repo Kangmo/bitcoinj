@@ -33,6 +33,9 @@ import static com.google.common.base.Preconditions.checkState;
  * and on the wire, are derived from this class.</p>
  */
 public abstract class Message implements Serializable {
+    public static final boolean DEFAULT_PARSE_LAZY = false;
+    public static final boolean DEFAULT_PARSE_RETAIN = false;
+
     private static final Logger log = LoggerFactory.getLogger(Message.class);
     private static final long serialVersionUID = -3561053461717079135L;
 
@@ -71,19 +74,19 @@ public abstract class Message implements Serializable {
      */
     protected Message() {
         parsed = true;
-        parseLazy = false;
-        parseRetain = false;
+        parseLazy = DEFAULT_PARSE_LAZY;
+        parseRetain = DEFAULT_PARSE_RETAIN;
     }
 
     Message(NetworkParameters params) {
         this.params = params;
         parsed = true;
-        parseLazy = false;
-        parseRetain = false;
+        parseLazy = DEFAULT_PARSE_LAZY;
+        parseRetain = DEFAULT_PARSE_RETAIN;
     }
 
     Message(NetworkParameters params, byte[] payload, int offset, int protocolVersion) throws ProtocolException {
-        this(params, payload, offset, protocolVersion, false, false, UNKNOWN_LENGTH);
+        this(params, payload, offset, protocolVersion, DEFAULT_PARSE_LAZY, DEFAULT_PARSE_RETAIN, UNKNOWN_LENGTH);
     }
 
     /**
@@ -160,7 +163,7 @@ public abstract class Message implements Serializable {
     }
 
     Message(NetworkParameters params, byte[] payload, int offset) throws ProtocolException {
-        this(params, payload, offset, NetworkParameters.PROTOCOL_VERSION, false, false, UNKNOWN_LENGTH);            
+        this(params, payload, offset, NetworkParameters.PROTOCOL_VERSION, DEFAULT_PARSE_LAZY, DEFAULT_PARSE_RETAIN, UNKNOWN_LENGTH);            
     }
 
     Message(NetworkParameters params, byte[] payload, int offset, boolean parseLazy, boolean parseRetain, int length) throws ProtocolException {

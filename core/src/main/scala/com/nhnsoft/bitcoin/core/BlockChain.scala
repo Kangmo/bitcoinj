@@ -90,7 +90,7 @@ class BlockChain(   params : NetworkParameters,
         lock.lock();
         try {
             val currentHeight : Int = getBestChainHeight();
-            checkArgument(height >= 0 && height <= currentHeight, "Bad height: %s", Integer.valueOf(height));
+            checkArgument(height >= 0 && height <= currentHeight, "Bad height: %d", Integer.valueOf(height));
             if (height == currentHeight)
                 return; // nothing to do
 

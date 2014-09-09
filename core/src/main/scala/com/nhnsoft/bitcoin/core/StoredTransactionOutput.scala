@@ -17,7 +17,7 @@
 
 package com.nhnsoft.bitcoin.core;
 
-import java.io.*;
+import java.io._;
 import java.math.BigInteger;
 
 /**
@@ -25,26 +25,26 @@ import java.math.BigInteger;
  * It avoids having to store the entire parentTransaction just to get the hash and index.
  * Its only really useful for MemoryFullPrunedBlockStore, and should probably be moved there
  */
-public class StoredTransactionOutput implements Serializable {
-    private static final long serialVersionUID = -8744924157056340509L;
+object StoredTransactionOutput {
+    /** arbitrary value lower than -{@link NetworkParameters#spendableCoinbaseDepth}
+     * (not too low to get overflows when we do blockHeight - NONCOINBASE_HEIGHT, though) */
+    private val NONCOINBASE_HEIGHT = -200;
 
+}
+@SerialVersionUID(-8744924157056340509L)
+class StoredTransactionOutput(
     /**
      *  A transaction output has some value and a script used for authenticating that the redeemer is allowed to spend
      *  this output.
      */
-    private Coin value;
-    private byte[] scriptBytes;
-
+    private var value : Coin,
+    private var scriptBytes : Array[Byte],
     /** Hash of the transaction to which we refer. */
-    private Sha256Hash hash;
+    private var hash : Sha256Hash,
     /** Which output of that transaction we are talking about. */
-    private long index;
-
-    /** arbitrary value lower than -{@link NetworkParameters#spendableCoinbaseDepth}
-     * (not too low to get overflows when we do blockHeight - NONCOINBASE_HEIGHT, though) */
-    private static final int NONCOINBASE_HEIGHT = -200;
+    private var index : Long,
     /** The height of the creating block (for coinbases, NONCOINBASE_HEIGHT otherwise) */
-    private int height;
+    private var height : Int) extends Serializable {
 
     /**
      * Creates a stored transaction output
@@ -54,111 +54,92 @@ public class StoredTransactionOutput implements Serializable {
      * @param height the height this output was created in
      * @param scriptBytes
      */
-    public StoredTransactionOutput(Sha256Hash hash, long index, Coin value, int height, boolean isCoinbase, byte[] scriptBytes) {
-        this.hash = hash;
-        this.index = index;
-        this.value = value;
-        this.height = isCoinbase ? height : NONCOINBASE_HEIGHT;
-        this.scriptBytes = scriptBytes;
+    def this(hash : Sha256Hash, index : Long, value : Coin, height : Int, isCoinbase : Boolean, scriptBytes : Array[Byte]) {
+        this(value, scriptBytes, hash, index, (if (isCoinbase) height else StoredTransactionOutput.NONCOINBASE_HEIGHT) )
     }
 
-    public StoredTransactionOutput(Sha256Hash hash, TransactionOutput out, int height, boolean isCoinbase) {
-        this.hash = hash;
-        this.index = out.getIndex();
-        this.value = out.getValue();
-        this.height = isCoinbase ? height : NONCOINBASE_HEIGHT;
-        this.scriptBytes = out.getScriptBytes();
+    def this(hash : Sha256Hash, out : TransactionOutput, height : Int, isCoinbase : Boolean) {
+        this(out.getValue(), out.getScriptBytes(), hash, out.getIndex(), (if (isCoinbase) height else StoredTransactionOutput.NONCOINBASE_HEIGHT) )
     }
 
-    public StoredTransactionOutput(InputStream in) throws IOException {
-        byte[] valueBytes = new byte[8];
+    @throws( classOf[IOException] )
+    def this(in : InputStream) {
+        this(null, null, null, 0L, 0)
+
+        val valueBytes : Array[Byte] = new Array[Byte](8);
         if (in.read(valueBytes, 0, 8) != 8)
             throw new EOFException();
-        value = Coin.valueOf(Utils.readInt64(valueBytes, 0));
-        
-        int scriptBytesLength = ((in.read() & 0xFF) << 0) |
+        value = Coin.valueOf(Utils.readInt64(valueBytes, 0))
+
+        val scriptBytesLength : Int = ((in.read() & 0xFF) << 0) |
                                 ((in.read() & 0xFF) << 8) |
                                 ((in.read() & 0xFF) << 16) |
                                 ((in.read() & 0xFF) << 24);
-        scriptBytes = new byte[scriptBytesLength];
+        scriptBytes = new Array[Byte](scriptBytesLength);
         if (in.read(scriptBytes) != scriptBytesLength)
             throw new EOFException();
-        
-        byte[] hashBytes = new byte[32];
+
+        val hashBytes = new Array[Byte](32);
         if (in.read(hashBytes) != 32)
             throw new EOFException();
         hash = new Sha256Hash(hashBytes);
-        
-        byte[] indexBytes = new byte[4];
+
+        val indexBytes = new Array[Byte](4);
         if (in.read(indexBytes) != 4)
             throw new EOFException();
         index = Utils.readUint32(indexBytes, 0);
 
         height = ((in.read() & 0xFF) << 0) |
-                 ((in.read() & 0xFF) << 8) |
-                 ((in.read() & 0xFF) << 16) |
-                 ((in.read() & 0xFF) << 24);
+            ((in.read() & 0xFF) << 8) |
+            ((in.read() & 0xFF) << 16) |
+            ((in.read() & 0xFF) << 24);
     }
 
     /**
      * The value which this Transaction output holds
      * @return the value
      */
-    public Coin getValue() {
-        return value;
-    }
+    def getValue() : Coin = value
 
     /**
      * The backing script bytes which can be turned into a Script object.
      * @return the scriptBytes
      */
-    public byte[] getScriptBytes() {
-        return scriptBytes;
-    }
+    def getScriptBytes() : Array[Byte] = scriptBytes
 
     /**
      * The hash of the transaction which holds this output
      * @return the hash
      */
-    public Sha256Hash getHash() {
-        return hash;
-    }
+    def getHash() : Sha256Hash = hash
 
     /**
      * The index of this output in the transaction which holds it
      * @return the index
      */
-    public long getIndex() {
-        return index;
-    }
+    def getIndex() : Long = index
 
     /**
      * Gets the height of the block that created this output (or -1 if this output was not created by a coinbase)
      */
-    public int getHeight() {
-        return height;
+    def getHeight() : Int = height
+
+    override def toString() : String = {
+        String.format("Stored TxOut of %s (%s:%d)", value.toFriendlyString(), hash.toString(), Integer.valueOf(index.toInt));
     }
 
-    @Override
-    public String toString() {
-        return String.format("Stored TxOut of %s (%s:%d)", value.toFriendlyString(), hash.toString(), index);
-    }
+    override def hashCode() : Int = hash.hashCode() + index.toInt;
 
-    @Override
-    public int hashCode() {
-        return hash.hashCode() + (int)index;
-    }
-
-    @Override
-    public boolean equals(Object o) {
+    override def equals(o : Any ) : Boolean = {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StoredTransactionOutput other = (StoredTransactionOutput) o;
+        val other = o.asInstanceOf[StoredTransactionOutput];
         return getHash().equals(other.getHash()) &&
                getIndex() == other.getIndex();
     }
 
-    public void serializeToStream(OutputStream bos) throws IOException {
+    @throws( classOf[IOException] )
+    def serializeToStream(bos : OutputStream) {
         Utils.uint64ToByteStreamLE(BigInteger.valueOf(value.value), bos);
         
         bos.write(0xFF & scriptBytes.length >> 0);

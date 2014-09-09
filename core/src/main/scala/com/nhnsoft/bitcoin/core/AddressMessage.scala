@@ -58,8 +58,12 @@ class AddressMessage(
     // kangmo - The addressess field needs to be initialized before the Message constructor is called.
     // Why? Message constructor calls AddressMessage.parse, which initializes the addresses field.
     // But if addresses is declared as a field, it initialized by AddressMessage constructor which is called after Message constructor,
-    // resulting in resetting the member to null after parse was called.
+    // resulting in resetting the addresses field to null after parse was called.
     private var addresses : List[PeerAddress] = null ) extends Message(_params, _payload, _offset, _parseLazy, _parseRetain, _length) {
+
+    @throws( classOf[ProtocolException] )
+    def this(params : NetworkParameters, payload : Array[Byte], offset : Int, parseLazy : Boolean, parseRetain : Boolean, length : Int) =
+        this(params, payload, offset, parseLazy, parseRetain, length, null /* addresses */ )
     
     /**
      * Contruct a new 'addr' message.
@@ -101,8 +105,8 @@ class AddressMessage(
         }
         
         addresses = new ArrayList[PeerAddress](numAddresses.toInt);
-        var i = 0L;
-        for (i <- 0L until numAddresses) {
+        
+        1L to numAddresses foreach { _ =>
             val addr = new PeerAddress(params, payload, cursor, protocolVersion, this, parseLazy, parseRetain);
             addresses.add(addr);
             cursor += addr.getMessageSize();

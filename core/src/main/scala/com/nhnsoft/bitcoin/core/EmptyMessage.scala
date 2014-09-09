@@ -25,9 +25,9 @@ import java.io.OutputStream;
  */
 @SerialVersionUID(8240801253854151802L)
 class EmptyMessage(
-    aParams : NetworkParameters, 
-    aPayload : Array[Byte], 
-    aOffset : Int) extends Message(aParams, aPayload, aOffset) {
+    _params : NetworkParameters, 
+    _payload : Array[Byte], 
+    _offset : Int) extends Message(_params, _payload, _offset) {
     length = 0;
 
     def this() = this(null, null, -1)

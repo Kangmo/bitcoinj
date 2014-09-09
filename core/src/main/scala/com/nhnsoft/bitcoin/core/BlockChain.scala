@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * Constructs a BlockChain connected to the given list of listeners and a store.
  */
+@throws( classOf[BlockStoreException] ) // kangmo - throws annotation on the main class constructor does not work as expected. Need to fix it.
 class BlockChain(   params : NetworkParameters, 
                     wallets : List[BlockChainListener],
                     /** Keeps a map of block hashes to StoredBlocks. */

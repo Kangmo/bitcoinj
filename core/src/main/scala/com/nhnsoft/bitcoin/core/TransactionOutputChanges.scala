@@ -23,55 +23,56 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
+import collection.JavaConversions._
+
 /**
  * <p>TransactionOutputChanges represents a delta to the set of unspent outputs. It used as a return value for
  * {@link AbstractBlockChain#connectTransactions(int, Block)}. It contains the full list of transaction outputs created
  * and spent in a block. It DOES contain outputs created that were spent later in the block, as those are needed for
  * BIP30 (no duplicate txid creation if the previous one was not fully spent prior to this block) verification.</p>
  */
-public class TransactionOutputChanges {
-    public final List<StoredTransactionOutput> txOutsCreated;
-    public final List<StoredTransactionOutput> txOutsSpent;
+class TransactionOutputChanges(val txOutsCreated : List[StoredTransactionOutput], val txOutsSpent : List[StoredTransactionOutput]) {
     
-    public TransactionOutputChanges(List<StoredTransactionOutput> txOutsCreated, List<StoredTransactionOutput> txOutsSpent) {
-        this.txOutsCreated = txOutsCreated;
-        this.txOutsSpent = txOutsSpent;
-    }
-    
-    public TransactionOutputChanges(InputStream in) throws IOException {
-        int numOutsCreated = ((in.read() & 0xFF) << 0) |
+    @throws( classOf[IOException] )
+    def this(in : InputStream) {
+        this( new LinkedList[StoredTransactionOutput](), new LinkedList[StoredTransactionOutput]() )
+        val numOutsCreated : Int = ((in.read() & 0xFF) << 0) |
                              ((in.read() & 0xFF) << 8) |
                              ((in.read() & 0xFF) << 16) |
                              ((in.read() & 0xFF) << 24);
-        txOutsCreated = new LinkedList<StoredTransactionOutput>();
-        for (int i = 0; i < numOutsCreated; i++)
+
+        1 to numOutsCreated foreach { _ =>
             txOutsCreated.add(new StoredTransactionOutput(in));
+        }
         
-        int numOutsSpent = ((in.read() & 0xFF) << 0) |
+        val numOutsSpent : Int = ((in.read() & 0xFF) << 0) |
                            ((in.read() & 0xFF) << 8) |
                            ((in.read() & 0xFF) << 16) |
                            ((in.read() & 0xFF) << 24);
-        txOutsSpent = new LinkedList<StoredTransactionOutput>();
-        for (int i = 0; i < numOutsSpent; i++)
+
+        1 to numOutsSpent foreach { _ =>
             txOutsSpent.add(new StoredTransactionOutput(in));
+        }
     }
 
-    public void serializeToStream(OutputStream bos) throws IOException {
-        int numOutsCreated = txOutsCreated.size();
+    @throws( classOf[IOException] )
+    def serializeToStream(bos : OutputStream) {
+        val numOutsCreated : Int = txOutsCreated.size();
         bos.write(0xFF & (numOutsCreated >> 0));
         bos.write(0xFF & (numOutsCreated >> 8));
         bos.write(0xFF & (numOutsCreated >> 16));
         bos.write(0xFF & (numOutsCreated >> 24));
-        for (StoredTransactionOutput output : txOutsCreated) {
+        
+        txOutsCreated.map { output : StoredTransactionOutput =>
             output.serializeToStream(bos);
         }
         
-        int numOutsSpent = txOutsSpent.size();
+        val numOutsSpent : Int = txOutsSpent.size();
         bos.write(0xFF & (numOutsSpent >> 0));
         bos.write(0xFF & (numOutsSpent >> 8));
         bos.write(0xFF & (numOutsSpent >> 16));
         bos.write(0xFF & (numOutsSpent >> 24));
-        for (StoredTransactionOutput output : txOutsSpent) {
+        txOutsSpent.map{ output : StoredTransactionOutput => 
             output.serializeToStream(bos);
         }
     }

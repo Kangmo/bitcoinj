@@ -389,14 +389,14 @@ public class FullPrunedBlockChain extends AbstractBlockChain {
             } else {
                 txOutChanges = block.getTxOutChanges();
                 if (!params.isCheckpoint(newBlock.getHeight()))
-                    for(StoredTransactionOutput out : txOutChanges.txOutsCreated) {
+                    for(StoredTransactionOutput out : txOutChanges.txOutsCreated()) {
                         Sha256Hash hash = out.getHash();
                         if (blockStore.getTransactionOutput(hash, out.getIndex()) != null)
                             throw new VerificationException("Block failed BIP30 test!");
                     }
-                for (StoredTransactionOutput out : txOutChanges.txOutsCreated)
+                for (StoredTransactionOutput out : txOutChanges.txOutsCreated())
                     blockStore.addUnspentTransactionOutput(out);
-                for (StoredTransactionOutput out : txOutChanges.txOutsSpent)
+                for (StoredTransactionOutput out : txOutChanges.txOutsSpent())
                     blockStore.removeUnspentTransactionOutput(out);
             }
         } catch (VerificationException e) {
@@ -423,9 +423,9 @@ public class FullPrunedBlockChain extends AbstractBlockChain {
             StoredUndoableBlock undoBlock = blockStore.getUndoBlock(oldBlock.getHeader().getHash());
             if (undoBlock == null) throw new PrunedException(oldBlock.getHeader().getHash());
             TransactionOutputChanges txOutChanges = undoBlock.getTxOutChanges();
-            for(StoredTransactionOutput out : txOutChanges.txOutsSpent)
+            for(StoredTransactionOutput out : txOutChanges.txOutsSpent())
                 blockStore.addUnspentTransactionOutput(out);
-            for(StoredTransactionOutput out : txOutChanges.txOutsCreated)
+            for(StoredTransactionOutput out : txOutChanges.txOutsCreated())
                 blockStore.removeUnspentTransactionOutput(out);
         } catch (PrunedException e) {
             blockStore.abortDatabaseBatchWrite();

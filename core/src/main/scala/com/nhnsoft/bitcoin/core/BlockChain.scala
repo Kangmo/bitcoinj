@@ -18,7 +18,7 @@
 
 package com.nhnsoft.bitcoin.core;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import com.google.common.base.Preconditions.checkArgument;
 
 import com.nhnsoft.bitcoin.store.BlockStore;
 import com.nhnsoft.bitcoin.store.BlockStoreException;
@@ -32,9 +32,15 @@ import java.util.List;
  * all of the block chain. Really, this class should be called SPVBlockChain but for backwards compatibility it is not.
  * </p>
  */
-public class BlockChain extends AbstractBlockChain {
-    /** Keeps a map of block hashes to StoredBlocks. */
-    protected final BlockStore blockStore;
+/**
+ * Constructs a BlockChain connected to the given list of listeners and a store.
+ */
+class BlockChain(   params : NetworkParameters, 
+                    wallets : List[BlockChainListener],
+                    /** Keeps a map of block hashes to StoredBlocks. */
+                    blockStore : BlockStore) extends AbstractBlockChain( params, wallets, blockStore) {
+
+
 
     /**
      * <p>Constructs a BlockChain connected to the given wallet and store. To obtain a {@link Wallet} you can construct
@@ -45,8 +51,9 @@ public class BlockChain extends AbstractBlockChain {
      * {@link com.nhnsoft.bitcoin.store.MemoryBlockStore} if you want to hold all headers in RAM and don't care about
      * disk serialization (this is rare).</p>
      */
-    public BlockChain(NetworkParameters params, Wallet wallet, BlockStore blockStore) throws BlockStoreException {
-        this(params, new ArrayList<BlockChainListener>(), blockStore);
+    @throws( classOf[BlockStoreException] )
+    def this(params : NetworkParameters, wallet : Wallet, blockStore : BlockStore) {
+        this(params, new ArrayList[BlockChainListener](), blockStore);
         if (wallet != null)
             addWallet(wallet);
     }
@@ -55,46 +62,39 @@ public class BlockChain extends AbstractBlockChain {
      * Constructs a BlockChain that has no wallet at all. This is helpful when you don't actually care about sending
      * and receiving coins but rather, just want to explore the network data structures.
      */
-    public BlockChain(NetworkParameters params, BlockStore blockStore) throws BlockStoreException {
-        this(params, new ArrayList<BlockChainListener>(), blockStore);
+    @throws( classOf[BlockStoreException] )
+    def this(params : NetworkParameters, blockStore : BlockStore) {
+        this(params, new ArrayList[BlockChainListener](), blockStore);
     }
 
-    /**
-     * Constructs a BlockChain connected to the given list of listeners and a store.
-     */
-    public BlockChain(NetworkParameters params, List<BlockChainListener> wallets,
-                      BlockStore blockStore) throws BlockStoreException {
-        super(params, wallets, blockStore);
-        this.blockStore = blockStore;
-    }
 
-    @Override
-    protected StoredBlock addToBlockStore(StoredBlock storedPrev, Block blockHeader, TransactionOutputChanges txOutChanges)
-            throws BlockStoreException, VerificationException {
-        StoredBlock newBlock = storedPrev.build(blockHeader);
+    @throws( classOf[BlockStoreException] )
+    @throws( classOf[VerificationException] )
+    override protected def addToBlockStore(storedPrev : StoredBlock, blockHeader : Block, txOutChanges : TransactionOutputChanges) : StoredBlock = {
+        val newBlock : StoredBlock = storedPrev.build(blockHeader);
         blockStore.put(newBlock);
-        return newBlock;
+        newBlock;
     }
     
-    @Override
-    protected StoredBlock addToBlockStore(StoredBlock storedPrev, Block blockHeader)
-            throws BlockStoreException, VerificationException {
-        StoredBlock newBlock = storedPrev.build(blockHeader);
+    @throws( classOf[BlockStoreException] )
+    @throws( classOf[VerificationException] )
+    override protected def addToBlockStore(storedPrev : StoredBlock, blockHeader : Block) : StoredBlock = {
+        val newBlock : StoredBlock = storedPrev.build(blockHeader);
         blockStore.put(newBlock);
-        return newBlock;
+        newBlock;
     }
 
-    @Override
-    protected void rollbackBlockStore(int height) throws BlockStoreException {
+    @throws( classOf[BlockStoreException] )
+    override protected def rollbackBlockStore(height : Int) {
         lock.lock();
         try {
-            int currentHeight = getBestChainHeight();
-            checkArgument(height >= 0 && height <= currentHeight, "Bad height: %s", height);
+            val currentHeight : Int = getBestChainHeight();
+            checkArgument(height >= 0 && height <= currentHeight, "Bad height: %s", Integer.valueOf(height));
             if (height == currentHeight)
                 return; // nothing to do
 
             // Look for the block we want to be the new chain head
-            StoredBlock newChainHead = blockStore.getChainHead();
+            var newChainHead : StoredBlock = blockStore.getChainHead();
             while (newChainHead.getHeight() > height) {
                 newChainHead = newChainHead.getPrev(blockStore);
                 if (newChainHead == null)
@@ -109,50 +109,45 @@ public class BlockChain extends AbstractBlockChain {
         }
     }
 
-    @Override
-    protected boolean shouldVerifyTransactions() {
-        return false;
-    }
+    override protected def shouldVerifyTransactions() : Boolean = false
 
-    @Override
-    protected TransactionOutputChanges connectTransactions(int height, Block block) {
+    override protected def connectTransactions(height :  Int, block : Block) : TransactionOutputChanges = {
         // Don't have to do anything as this is only called if(shouldVerifyTransactions())
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected TransactionOutputChanges connectTransactions(StoredBlock newBlock) {
+    override protected def connectTransactions(newBlock : StoredBlock) : TransactionOutputChanges = {
         // Don't have to do anything as this is only called if(shouldVerifyTransactions())
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected void disconnectTransactions(StoredBlock block) {
+    override protected def disconnectTransactions(block : StoredBlock) {
         // Don't have to do anything as this is only called if(shouldVerifyTransactions())
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected void doSetChainHead(StoredBlock chainHead) throws BlockStoreException {
+    @throws( classOf[BlockStoreException] )
+    override protected def doSetChainHead(chainHead : StoredBlock) {
         blockStore.setChainHead(chainHead);
     }
 
-    @Override
-    protected void notSettingChainHead() throws BlockStoreException {
+    @throws( classOf[BlockStoreException] )
+    override protected def notSettingChainHead() {
         // We don't use DB transactions here, so we don't need to do anything
     }
 
-    @Override
-    protected StoredBlock getStoredBlockInCurrentScope(Sha256Hash hash) throws BlockStoreException {
-        return blockStore.get(hash);
+    @throws( classOf[BlockStoreException] )
+    override protected def getStoredBlockInCurrentScope(hash : Sha256Hash) : StoredBlock = {
+        blockStore.get(hash);
     }
 
-    @Override
-    public boolean add(FilteredBlock block) throws VerificationException, PrunedException {
-        boolean success = super.add(block);
+    @throws( classOf[VerificationException] )
+    @throws( classOf[PrunedException] )
+    override def add(block : FilteredBlock) : Boolean = {
+        val success : Boolean = super.add(block);
         if (success) {
             trackFilteredTransactions(block.getTransactionCount());
         }
-        return success;
+        success;
     }
 }

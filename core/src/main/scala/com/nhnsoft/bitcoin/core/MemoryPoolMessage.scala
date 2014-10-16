@@ -27,13 +27,14 @@ import java.io.OutputStream;
  * it's just a holding area for transactions that a part of the app may find interesting. The mempool message has
  * no fields.
  */
-public class MemoryPoolMessage extends Message {
-    @Override
-    void parse() throws ProtocolException {}
+class MemoryPoolMessage extends Message {
+    @throws(classOf[ProtocolException])
+    override def parse() {}
 
-    @Override
-    protected void parseLite() throws ProtocolException {}
+    @throws(classOf[ProtocolException])
+    // TODO : Correctly port "protected" modifier.
+    protected override def parseLite() {}
 
-    @Override
-    void bitcoinSerializeToStream(OutputStream stream) throws IOException {}
+    @throws(classOf[IOException])
+    override def bitcoinSerializeToStream(stream : OutputStream) {}
 }

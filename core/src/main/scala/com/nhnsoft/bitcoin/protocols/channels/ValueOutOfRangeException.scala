@@ -20,8 +20,4 @@ package com.nhnsoft.bitcoin.protocols.channels;
 /**
  * Used when a given value is either too large too afford or too small for the network to accept.
  */
-public class ValueOutOfRangeException extends Exception {
-    public ValueOutOfRangeException(String message) {
-        super(message);
-    }
-}
+class ValueOutOfRangeException(message : String) extends Exception(message)

@@ -19,13 +19,11 @@ package com.nhnsoft.bitcoin.signers;
 /**
  * A signer that doesn't have any state to be serialized.
  */
-public abstract class StatelessTransactionSigner implements TransactionSigner {
-    @Override
-    public void deserialize(byte[] data) {
+abstract class StatelessTransactionSigner extends TransactionSigner {
+    override def deserialize(data : Array[Byte]) {
     }
 
-    @Override
-    public byte[] serialize() {
-        return new byte[0];
+    override def serialize() = {
+        new Array[Byte](0);
     }
 }

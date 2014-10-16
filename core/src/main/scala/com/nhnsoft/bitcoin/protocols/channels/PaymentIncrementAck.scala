@@ -25,21 +25,10 @@ import javax.annotation.Nullable;
 /**
  * An acknowledgement of a payment increase
  */
-public class PaymentIncrementAck {
-    private final Coin value;
-    @Nullable private final ByteString info;
+// TODO : Check if dropping final modifier on value and info field is ok.
+class PaymentIncrementAck(value : Coin, @Nullable info : ByteString) {
 
-    public PaymentIncrementAck(Coin value, @Nullable ByteString info) {
-        this.value = value;
-        this.info = info;
-    }
+    def getValue() = value
 
-    public Coin getValue() {
-        return value;
-    }
-
-    @Nullable
-    public ByteString getInfo() {
-        return info;
-    }
+    @Nullable def getInfo() = info
 }

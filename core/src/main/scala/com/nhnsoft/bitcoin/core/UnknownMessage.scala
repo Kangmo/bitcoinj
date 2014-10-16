@@ -18,17 +18,10 @@
 
 package com.nhnsoft.bitcoin.core;
 
-public class UnknownMessage extends EmptyMessage {
-    private static final long serialVersionUID = 3614705938207918775L;
-    private String name;
-
-    public UnknownMessage(NetworkParameters params, String name, byte[] payloadBytes) throws ProtocolException {
-        super(params, payloadBytes, 0);
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Unknown message [" + name + "]: " + (payload == null ? "" : Utils.HEX.encode(payload));
-    }
+// TODO : Correctly implement throws clause for the constructor.
+@throws(classOf[ProtocolException])
+@SerialVersionUID(3614705938207918775L)
+class UnknownMessage(params : NetworkParameters, name : String, payloadBytes : Array[Byte]) extends EmptyMessage(params, payloadBytes, 0) {
+    override def toString() =
+        "Unknown message [" + name + "]: " + (if (payload == null) "" else Utils.HEX.encode(payload));
 }

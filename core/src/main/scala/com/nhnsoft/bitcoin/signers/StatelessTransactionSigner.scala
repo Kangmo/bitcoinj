@@ -24,6 +24,6 @@ abstract class StatelessTransactionSigner extends TransactionSigner {
     }
 
     override def serialize() = {
-        new Array[Byte](0);
+        Array[Byte]();
     }
 }

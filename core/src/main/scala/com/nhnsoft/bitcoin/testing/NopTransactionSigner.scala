@@ -19,34 +19,21 @@ package com.nhnsoft.bitcoin.testing;
 import com.nhnsoft.bitcoin.signers.TransactionSigner;
 import com.nhnsoft.bitcoin.wallet.KeyBag;
 
-public class NopTransactionSigner implements TransactionSigner {
-    private boolean isReady;
-
-    public NopTransactionSigner() {
+class NopTransactionSigner(var isReady : Boolean) extends TransactionSigner {
+    def this() {
+      this(false)
+    }
+    override def serialize() = {
+        if (isReady)
+          Array[Byte](1)
+        else
+          Array[Byte](0)
     }
 
-    public NopTransactionSigner(boolean ready) {
-        this.isReady = ready;
-    }
-
-    @Override
-    public boolean isReady() {
-        return isReady;
-    }
-
-    @Override
-    public byte[] serialize() {
-        return isReady ? new byte[]{1} : new byte[]{0};
-    }
-
-    @Override
-    public void deserialize(byte[] data) {
+    override def deserialize(data : Array[Byte]) {
         if (data.length > 0)
-            isReady = data[0] == 1;
+            isReady = data(0) == 1
     }
 
-    @Override
-    public boolean signInputs(ProposedTransaction t, KeyBag keyBag) {
-        return false;
-    }
+    override def signInputs(t : TransactionSigner.ProposedTransaction, keyBag : KeyBag) = false
 }

@@ -2776,7 +2776,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             checkNotNull(selector);
             LinkedList<TransactionOutput> candidates = calculateAllSpendCandidates(true);
             CoinSelection selection = selector.select(NetworkParameters.MAX_MONEY, candidates);
-            return selection.valueGathered;
+            return selection.valueGathered();
         } finally {
             lock.unlock();
         }
@@ -2797,7 +2797,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             checkNotNull(selector);
             List<TransactionOutput> candidates = getWatchedOutputs(true);
             CoinSelection selection = selector.select(NetworkParameters.MAX_MONEY, candidates);
-            return selection.valueGathered;
+            return selection.valueGathered();
         } finally {
             lock.unlock();
         }
@@ -2922,7 +2922,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
         public boolean emptyWallet = false;
 
         /**
-         * "Change" means the difference between the value gathered by a transactions inputs (the size of which you
+         * "Change" means the difference between the value gathered() by a transactions inputs (the size of which you
          * don't really control as it depends on who sent you money), and the value being sent somewhere else. The
          * change address should be selected from this wallet, normally. <b>If null this will be chosen for you.</b>
          */
@@ -3335,11 +3335,11 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
                 CoinSelector selector = req.coinSelector == null ? coinSelector : req.coinSelector;
                 bestCoinSelection = selector.select(NetworkParameters.MAX_MONEY, candidates);
                 candidates = null;  // Selector took ownership and might have changed candidates. Don't access again.
-                req.tx.getOutput(0).setValue(bestCoinSelection.valueGathered);
-                log.info("  emptying {}", bestCoinSelection.valueGathered.toFriendlyString());
+                req.tx.getOutput(0).setValue(bestCoinSelection.valueGathered());
+                log.info("  emptying {}", bestCoinSelection.valueGathered().toFriendlyString());
             }
 
-            for (TransactionOutput output : bestCoinSelection.gathered)
+            for (TransactionOutput output : bestCoinSelection.gathered())
                 req.tx.addInput(output);
 
             if (req.ensureMinRequiredFee && req.emptyWallet) {
@@ -3770,10 +3770,10 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
      * <p>Gets a bloom filter that contains all of the public keys from this wallet, and which will provide the given
      * false-positive rate if it has size elements. Keep in mind that you will get 2 elements in the bloom filter for
      * each key in the wallet, for the public key and the hash of the public key (address form).</p>
-     * 
+     *
      * <p>This is used to generate a BloomFilter which can be {@link BloomFilter#merge(BloomFilter)}d with another.
      * It could also be used if you have a specific target for the filter's size.</p>
-     * 
+     *
      * <p>See the docs for {@link BloomFilter(int, double)} for a brief explanation of anonymity when using bloom
      * filters.</p>
      */
@@ -3950,11 +3950,11 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             // selector is allowed to modify candidates list.
             CoinSelection selection = selector.select(valueNeeded, new LinkedList<TransactionOutput>(candidates));
             // Can we afford this?
-            if (selection.valueGathered.compareTo(valueNeeded) < 0) {
-                valueMissing = valueNeeded.subtract(selection.valueGathered);
+            if (selection.valueGathered().compareTo(valueNeeded) < 0) {
+                valueMissing = valueNeeded.subtract(selection.valueGathered());
                 break;
             }
-            checkState(selection.gathered.size() > 0 || originalInputs.size() > 0);
+            checkState(selection.gathered().size() > 0 || originalInputs.size() > 0);
 
             // We keep track of an upper bound on transaction size to calculate fees that need to be added.
             // Note that the difference between the upper bound and lower bound is usually small enough that it
@@ -3965,7 +3965,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             boolean eitherCategory2Or3 = false;
             boolean isCategory3 = false;
 
-            Coin change = selection.valueGathered.subtract(valueNeeded);
+            Coin change = selection.valueGathered().subtract(valueNeeded);
             if (additionalValueSelected != null)
                 change = change.add(additionalValueSelected);
 
@@ -4010,7 +4010,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
             }
 
             // Now add unsigned inputs for the selected coins.
-            for (TransactionOutput output : selection.gathered) {
+            for (TransactionOutput output : selection.gathered()) {
                 TransactionInput input = req.tx.addInput(output);
                 // If the scriptBytes don't default to none, our size calculations will be thrown off.
                 checkState(input.getScriptBytes().length == 0);
@@ -4066,15 +4066,15 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
         result.bestChangeOutput = null;
         if (selection1 != null) {
             if (selection1Change != null)
-                lowestFee = selection1.valueGathered.subtract(selection1Change.getValue());
+                lowestFee = selection1.valueGathered().subtract(selection1Change.getValue());
             else
-                lowestFee = selection1.valueGathered;
+                lowestFee = selection1.valueGathered();
             result.bestCoinSelection = selection1;
             result.bestChangeOutput = selection1Change;
         }
 
         if (selection2 != null) {
-            Coin fee = selection2.valueGathered.subtract(checkNotNull(selection2Change).getValue());
+            Coin fee = selection2.valueGathered().subtract(checkNotNull(selection2Change).getValue());
             if (lowestFee == null || fee.compareTo(lowestFee) < 0) {
                 lowestFee = fee;
                 result.bestCoinSelection = selection2;
@@ -4083,7 +4083,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
         }
 
         if (selection3 != null) {
-            if (lowestFee == null || selection3.valueGathered.compareTo(lowestFee) < 0) {
+            if (lowestFee == null || selection3.valueGathered().compareTo(lowestFee) < 0) {
                 result.bestCoinSelection = selection3;
                 result.bestChangeOutput = null;
             }
@@ -4099,7 +4099,7 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
 
     private int estimateBytesForSigning(CoinSelection selection) {
         int size = 0;
-        for (TransactionOutput output : selection.gathered) {
+        for (TransactionOutput output : selection.gathered()) {
             try {
                 Script script = output.getScriptPubKey();
                 ECKey key = null;
@@ -4324,13 +4324,13 @@ public class Wallet extends BaseTaggableObject implements Serializable, BlockCha
                 selector.excludeOutputsSpentBy(other);
             // TODO: Make this use the standard SendRequest.
             CoinSelection toMove = selector.select(Coin.ZERO, calculateAllSpendCandidates(true));
-            if (toMove.valueGathered.equals(Coin.ZERO)) return null;  // Nothing to do.
+            if (toMove.valueGathered().equals(Coin.ZERO)) return null;  // Nothing to do.
             maybeUpgradeToHD(aesKey);
             Transaction rekeyTx = new Transaction(params);
-            for (TransactionOutput output : toMove.gathered) {
+            for (TransactionOutput output : toMove.gathered()) {
                 rekeyTx.addInput(output);
             }
-            rekeyTx.addOutput(toMove.valueGathered, freshReceiveAddress());
+            rekeyTx.addOutput(toMove.valueGathered(), freshReceiveAddress());
             if (!adjustOutputDownwardsForFee(rekeyTx, toMove, Coin.ZERO, Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) {
                 log.error("Failed to adjust rekey tx for fees.");
                 return null;
